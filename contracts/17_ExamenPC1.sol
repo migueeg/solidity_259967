@@ -41,4 +41,17 @@ contract SistemaInventario259967 {
     function contarElementos() public view ejecutadoPor returns (uint256) {
         return registros.length;
     }
+
+    function inactivarElemento(uint256 _posicion) public ejecutadoPor {
+    require(_posicion < registros.length, "La posicion no existe");
+    registros[_posicion].estado = false;
+    }
+
+    function pintarElementosActivos() public view ejecutadoPor {
+        for (uint256 i = 0; i < registros.length; i++) {
+            if (registros[i].estado == true) {
+                console.log("Elemento activo:", registros[i].id, registros[i].nombre);
+            }
+        }
+    }
 }
