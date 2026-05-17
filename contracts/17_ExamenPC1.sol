@@ -8,26 +8,37 @@ contract SistemaInventario259967 {
         uint256 id;
         string nombre;
         uint256 cantidad;
+        bool estado;
     }
 
     NombreStruct[] public registros;
 
     address public dirContrato = 0x358AA13c52544ECCEF6B0ADD0f801012ADAD5eE3;
 
-    constructor() {
+    modifier ejecutadoPor() {
         console.log("Ejecutado por: 259967 - MIGUEL ANGEL ESCOBAR GOMEZ");
+        _;
     }
+
+    constructor() ejecutadoPor {}
 
     function agregarElemento(
         uint256 _id,
         string memory _nombre,
-        uint256 _cantidad
-    ) public {
-        registros.push(NombreStruct(_id, _nombre, _cantidad));
+        uint256 _cantidad,
+        bool _estado
+    ) public ejecutadoPor {
+        require(bytes(_nombre).length > 0, "El nombre no puede estar vacio");
+        require(_cantidad > 0, "La cantidad debe ser mayor a cero");
+
+        for (uint256 i = 0; i < registros.length; i++) {
+            require(registros[i].id != _id, "Elemento con ese ID ya existe");
+        }
+
+        registros.push(NombreStruct(_id, _nombre, _cantidad, _estado));
     }
 
-    function contarElementos() public view returns (uint256) {
-        console.log("Ejecutado por: 259967 - MIGUEL ANGEL ESCOBAR GOMEZ");
+    function contarElementos() public view ejecutadoPor returns (uint256) {
         return registros.length;
     }
 }
