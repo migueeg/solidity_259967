@@ -7,11 +7,13 @@ contract SistemaInventario259967 {
     struct NombreStruct {
         uint256 id;
         string nombre;
-        uint256 cantidad;
+        uint256 cantidadProducto;
         bool estado;
     }
 
-    NombreStruct[] public registros;
+    mapping(uint256 => NombreStruct) public registros;
+
+    uint256 public cantidad;
 
     address public dirContrato = 0x358AA13c52544ECCEF6B0ADD0f801012ADAD5eE3;
 
@@ -25,30 +27,28 @@ contract SistemaInventario259967 {
     function agregarElemento(
         uint256 _id,
         string memory _nombre,
-        uint256 _cantidad,
+        uint256 _cantidadProducto,
         bool _estado
     ) public ejecutadoPor {
         require(bytes(_nombre).length > 0, "El nombre no puede estar vacio");
-        require(_cantidad > 0, "La cantidad debe ser mayor a cero");
+        require(_cantidadProducto > 0, "La cantidad debe ser mayor a cero");
+        require(registros[_id].id == 0, "Elemento con ese ID ya existe");
 
-        for (uint256 i = 0; i < registros.length; i++) {
-            require(registros[i].id != _id, "Elemento con ese ID ya existe");
-        }
-
-        registros.push(NombreStruct(_id, _nombre, _cantidad, _estado));
+        registros[_id] = NombreStruct(_id, _nombre, _cantidadProducto, _estado);
+        cantidad++;
     }
 
     function contarElementos() public view ejecutadoPor returns (uint256) {
-        return registros.length;
+        return cantidad;
     }
 
-    function inactivarElemento(uint256 _posicion) public ejecutadoPor {
-    require(_posicion < registros.length, "La posicion no existe");
-    registros[_posicion].estado = false;
+    function inactivarElemento(uint256 _id) public ejecutadoPor {
+        require(registros[_id].id != 0, "El elemento no existe");
+        registros[_id].estado = false;
     }
 
     function pintarElementosActivos() public view ejecutadoPor {
-        for (uint256 i = 0; i < registros.length; i++) {
+        for (uint256 i = 1; i <= cantidad; i++) {
             if (registros[i].estado == true) {
                 console.log("Elemento activo:", registros[i].id, registros[i].nombre);
             }
